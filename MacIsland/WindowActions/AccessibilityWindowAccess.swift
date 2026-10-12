@@ -28,34 +28,6 @@ struct AccessibilityWindowAccess: WindowAccess {
         return window
     }
 
-    func visibleWindows(pid: Int32) throws -> [AXUIElement] {
-        guard let windows = value(kAXWindowsAttribute, of: app(pid: pid)) as? [AXUIElement] else {
-            throw WindowActionError.unavailable
-        }
-        // CG supplies on-screen bounds without requiring window titles or screen recording permission.
-        // Reject ambiguous identical bounds to avoid moving an off-Space window by mistake.
-        let info = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
-        let visibleBounds = info.compactMap { row -> CGRect? in
-            guard (row[kCGWindowOwnerPID as String] as? NSNumber)?.int32Value == pid,
-                  (row[kCGWindowLayer as String] as? NSNumber)?.intValue == 0,
-                  let bounds = row[kCGWindowBounds as String] as? NSDictionary else { return nil }
-            return CGRect(dictionaryRepresentation: bounds)
-        }
-        guard windows.count <= 48 else { throw WindowActionError.timedOut }
-        let deadline = Date().addingTimeInterval(2)
-        var candidates: [(AXUIElement, CGRect)] = []
-        for window in windows {
-            guard Date() < deadline else { throw WindowActionError.timedOut }
-            AXUIElementSetMessagingTimeout(window, 0.2)
-            if isAdjustable(window), let rect = try? frame(of: window) { candidates.append((window, rect)) }
-        }
-        return candidates.compactMap { window, rect in
-            let matchCount = candidates.filter { WindowLayout.approximatelyEqual($0.1, rect) }.count
-            let visibleCount = visibleBounds.filter { WindowLayout.approximatelyEqual($0, rect) }.count
-            return visibleCount >= matchCount ? window : nil
-        }
-    }
-
     func frame(of window: AXUIElement) throws -> CGRect {
         guard let position = value(kAXPositionAttribute, of: window), CFGetTypeID(position) == AXValueGetTypeID(),
               let size = value(kAXSizeAttribute, of: window), CFGetTypeID(size) == AXValueGetTypeID() else {

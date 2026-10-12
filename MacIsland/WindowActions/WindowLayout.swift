@@ -1,13 +1,12 @@
 import Foundation
 
 enum WindowAction: String, CaseIterable, Identifiable {
-    case left, fill, tile, right
+    case left, fill, right
     var id: String { rawValue }
     var title: String {
         switch self {
         case .left: return "左半屏"
         case .fill: return "铺满屏幕"
-        case .tile: return "魔法平铺"
         case .right: return "右半屏"
         }
     }
@@ -40,23 +39,7 @@ enum WindowLayout {
         switch action {
         case .left: return CGRect(x: area.minX, y: area.minY, width: half, height: area.height)
         case .right: return CGRect(x: area.minX + half, y: area.minY, width: area.width - half, height: area.height)
-        case .fill, .tile: return area
-        }
-    }
-
-    static func tiles(count: Int, in area: CGRect) -> [CGRect] {
-        guard count > 0 else { return [] }
-        let columns = min(count, max(1, Int(ceil(sqrt(Double(count))))))
-        let rows = Int(ceil(Double(count) / Double(columns)))
-        return (0..<count).map { index in
-            let row = index / columns
-            let column = index % columns
-            let cells = min(columns, count - row * columns)
-            let x = area.minX + floor(CGFloat(column) * area.width / CGFloat(cells))
-            let nextX = area.minX + floor(CGFloat(column + 1) * area.width / CGFloat(cells))
-            let y = area.minY + floor(CGFloat(row) * area.height / CGFloat(rows))
-            let nextY = area.minY + floor(CGFloat(row + 1) * area.height / CGFloat(rows))
-            return CGRect(x: x, y: y, width: nextX - x, height: nextY - y)
+        case .fill: return area
         }
     }
 
@@ -69,19 +52,17 @@ enum WindowLayout {
 protocol WindowAccess {
     associatedtype Window
     func focusedWindow(pid: Int32) throws -> Window
-    func visibleWindows(pid: Int32) throws -> [Window]
     func frame(of window: Window) throws -> CGRect
     func isAdjustable(_ window: Window) -> Bool
     func setFrame(_ frame: CGRect, of window: Window) throws
 }
 
 enum WindowActionError: LocalizedError {
-    case unavailable, unsupported, noScreen, timedOut
+    case unavailable, unsupported, noScreen
     var errorDescription: String? {
         switch self {
         case .unavailable: return "未找到可控制的窗口，请先选中一个应用窗口。"
         case .unsupported: return "此窗口不支持调整，或处于全屏模式。"
-        case .timedOut: return "目标应用响应较慢，请稍后重试。"
         case .noScreen: return "显示器已断开，请重新选择窗口。"
         }
     }
@@ -105,34 +86,10 @@ struct WindowActionExecutor<Access: WindowAccess> {
         guard access.isAdjustable(focused), !WindowLayout.approximatelyEqual(original, screen.frame) else {
             throw WindowActionError.unsupported
         }
-        let windows: [Access.Window]
-        if action == .tile {
-            windows = try access.visibleWindows(pid: pid).filter { window in
-                guard access.isAdjustable(window), let frame = try? access.frame(of: window) else { return false }
-                return WindowLayout.screenIndex(for: frame, screens: screens) == screenIndex
-                    && !WindowLayout.approximatelyEqual(frame, screen.frame)
-            }
-            guard !windows.isEmpty else { throw WindowActionError.unavailable }
-            guard windows.count <= 12 else {
-                return WindowActionResult(applied: 0, failed: windows.count, message: "窗口超过 12 个，请先减少可见窗口后再平铺。")
-            }
-        } else {
-            windows = [focused]
-        }
-        let frames = action == .tile ? WindowLayout.tiles(count: windows.count, in: screen.visibleFrame)
-            : [WindowLayout.frame(for: action, in: screen.visibleFrame)]
-        var applied = 0
-        let deadline = Date().addingTimeInterval(5)
-        for (window, frame) in zip(windows, frames) {
-            guard Date() < deadline else { break }
-            do {
-                try access.setFrame(frame, of: window)
-                if WindowLayout.approximatelyEqual(try access.frame(of: window), frame) { applied += 1 }
-            } catch { /* Continue and accurately report partial completion. */ }
-        }
-        let failed = windows.count - applied
-        let message = failed == 0 ? (action == .tile ? "已平铺 \(applied) 个窗口" : "已完成\(action.title)")
-            : "\(applied) 个完成，\(failed) 个未完整调整（尺寸限制或应用不支持）"
-        return WindowActionResult(applied: applied, failed: failed, message: message)
+        let frame = WindowLayout.frame(for: action, in: screen.visibleFrame)
+        try access.setFrame(frame, of: focused)
+        let completed = WindowLayout.approximatelyEqual(try access.frame(of: focused), frame)
+        return WindowActionResult(applied: completed ? 1 : 0, failed: completed ? 0 : 1,
+                                  message: completed ? "已完成\(action.title)" : "窗口未完整调整（尺寸限制或应用不支持）")
     }
 }

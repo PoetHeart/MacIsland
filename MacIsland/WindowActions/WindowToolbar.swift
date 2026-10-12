@@ -17,7 +17,7 @@ struct WindowToolbar: View {
                     }
                     .buttonStyle(WindowTileStyle())
                     .disabled(!manager.canPerform)
-                    .help(action == .tile ? "自动平铺当前应用在同一屏幕的可见窗口" : "调整当前应用窗口：\(action.title)")
+                    .help("调整当前应用窗口：\(action.title)")
                 }
             }
             if !manager.isTrusted {
@@ -66,8 +66,6 @@ private struct WindowActionIcon: View {
                     Rectangle().frame(width: (width - 6) / 2, height: height - 6).offset(x: width / 2, y: 0)
                 case .fill:
                     RoundedRectangle(cornerRadius: 1).padding(3)
-                case .tile:
-                    HStack(spacing: 2) { Rectangle(); Rectangle(); Rectangle() }.padding(3)
                 }
             }
         }
