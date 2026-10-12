@@ -32,7 +32,7 @@ struct ScreenGeometry {
 
     static func preferredScreen() -> NSScreen? {
         // Prefer a physical notch; lid-closed and external-only setups fall back naturally.
-        NSScreen.screens.first { $0.safeAreaInsets.top > 0 } ?? NSScreen.main ?? NSScreen.screens.first
+        NSScreen.screens.first { $0.safeAreaInsets.top > 0 } ?? NSScreen.screens.first
     }
 
     func size(for state: IslandState) -> CGSize {

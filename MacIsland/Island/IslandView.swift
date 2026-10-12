@@ -50,7 +50,7 @@ struct IslandView: View {
             Color.clear
             content
                 .modifier(IslandSurface(width: size.width, height: size.height, reportSize: reportSize))
-                .animation(reduceMotion ? .easeOut(duration: 0.12) : .spring(response: 0.42, dampingFraction: 0.82), value: model.state)
+                .animation(!model.animationsEnabled ? nil : reduceMotion ? .easeOut(duration: 0.12) : .spring(response: 0.42, dampingFraction: 0.82), value: model.state)
         }
         .preferredColorScheme(.dark)
     }
@@ -68,7 +68,7 @@ struct IslandView: View {
                     Image(systemName: "capsule.fill").foregroundStyle(.white.opacity(0.8))
                     Text("MacIsland").font(.system(size: 17, weight: .semibold))
                     Spacer()
-                    Text("V0.1").font(.system(size: 11, weight: .medium, design: .monospaced)).foregroundStyle(.secondary)
+                    Text("V0.2").font(.system(size: 11, weight: .medium, design: .monospaced)).foregroundStyle(.secondary)
                 }
                 Text("基础框架已就绪")
                     .font(.system(size: 14)).frame(maxWidth: .infinity, alignment: .leading)

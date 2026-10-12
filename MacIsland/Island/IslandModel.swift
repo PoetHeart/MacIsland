@@ -10,5 +10,9 @@ enum IslandState: String {
 final class IslandModel: ObservableObject {
     @Published var state: IslandState = .idle
     @Published var geometry: ScreenGeometry
-    init(geometry: ScreenGeometry) { self.geometry = geometry }
+    let animationsEnabled: Bool
+    init(geometry: ScreenGeometry, animationsEnabled: Bool = true) {
+        self.geometry = geometry
+        self.animationsEnabled = animationsEnabled
+    }
 }
