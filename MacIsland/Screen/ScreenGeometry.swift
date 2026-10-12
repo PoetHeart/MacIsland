@@ -36,8 +36,8 @@ struct ScreenGeometry {
     }
 
     func size(for state: IslandState) -> CGSize {
-        let idleWidth = hasNotch ? notchSize.width + 12 : 132
-        let idleHeight = hasNotch ? notchSize.height + 5 : 28
+        let idleWidth = hasNotch ? notchSize.width : 132
+        let idleHeight = hasNotch ? notchSize.height : 0
         let requested: CGSize
         switch state {
         case .idle: requested = CGSize(width: idleWidth, height: idleHeight)
@@ -47,6 +47,14 @@ struct ScreenGeometry {
         // Dimensions are design choices; screen position and cutout dimensions are never hard-coded.
         return CGSize(width: min(requested.width, screenFrame.width - 24),
                       height: min(requested.height, screenFrame.height - 24))
+    }
+
+    /// Invisible hover target, separate from the visible/interactive island outline.
+    var activationRect: CGRect {
+        let width = hasNotch ? notchSize.width : min(132, screenFrame.width)
+        // Two points below the camera housing make the edge reachable without drawing a lip.
+        let height = hasNotch ? notchSize.height + 2 : 4
+        return CGRect(x: centerX - width / 2, y: top - height, width: width, height: height)
     }
 
     var panelFrame: CGRect {

@@ -51,6 +51,9 @@ struct IslandView: View {
             Color.clear
             content
                 .modifier(IslandSurface(width: size.width, height: size.height, reportSize: reportSize))
+                .opacity(model.state == .idle ? 0 : 1)
+                .allowsHitTesting(model.state != .idle)
+                .accessibilityHidden(model.state == .idle)
                 .animation(!model.animationsEnabled ? nil : reduceMotion ? .easeOut(duration: 0.12) : .spring(response: 0.42, dampingFraction: 0.82), value: model.state)
         }
         .preferredColorScheme(.dark)

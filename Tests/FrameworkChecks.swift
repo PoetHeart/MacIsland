@@ -13,6 +13,11 @@ struct FrameworkChecks {
                                     left: CGRect(x: 0, y: 924, width: 645.5, height: 32),
                                     right: CGRect(x: 824.5, y: 924, width: 645.5, height: 32))
         precondition(notched.hasNotch && notched.centerX == 735 && notched.notchSize == CGSize(width: 179, height: 32))
+        precondition(notched.size(for: .idle) == notched.notchSize)
+        precondition(plain.size(for: .idle).height == 0)
+        precondition(notched.activationRect.minY == notched.top - notched.notchSize.height - 2)
+        precondition(plain.activationRect.height == 4)
+        precondition(!plain.activationRect.contains(CGPoint(x: plain.centerX, y: plain.top - 10)))
         let fallback = ScreenGeometry(frame: plain.screenFrame, safeHeight: 32, left: nil, right: nil)
         precondition(!fallback.hasNotch)
         for geometry in [plain, notched, fallback] {
@@ -61,7 +66,7 @@ struct FrameworkChecks {
         guard let geometry = controller.model?.geometry else { fatalError("No screen available") }
         try await Task.sleep(for: .milliseconds(100))
         precondition(controller.model?.state == .idle && controller.panel?.ignoresMouseEvents == true)
-        mouse = CGPoint(x: geometry.centerX, y: geometry.top - geometry.size(for: .idle).height + 2)
+        mouse = CGPoint(x: geometry.centerX, y: geometry.activationRect.midY)
         try await Task.sleep(for: .milliseconds(100))
         precondition(controller.model?.state == .compact && controller.panel?.ignoresMouseEvents == false)
         try await Task.sleep(for: .milliseconds(800))

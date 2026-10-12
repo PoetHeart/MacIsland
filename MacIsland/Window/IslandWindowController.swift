@@ -100,8 +100,11 @@ final class IslandWindowController {
         }
         let mouse = pointerLocation()
         let local = CGPoint(x: mouse.x - (model.geometry.centerX - displaySize.width / 2), y: model.geometry.top - mouse.y)
-        let inside = IslandOutline().path(in: CGRect(origin: .zero, size: displaySize)).contains(local)
-        panel.ignoresMouseEvents = !inside
+        let onSurface = model.state != .idle
+            && IslandOutline().path(in: CGRect(origin: .zero, size: displaySize)).contains(local)
+        let inside = model.geometry.activationRect.contains(mouse) || onSurface
+        // The invisible trigger observes the pointer but never blocks clicks underneath.
+        panel.ignoresMouseEvents = !onSurface
         guard inside != pointerInside else { return }
         pointerInside = inside
         transition?.cancel()
