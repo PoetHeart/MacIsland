@@ -41,6 +41,7 @@ private struct IslandSurface: AnimatableModifier {
 
 struct IslandView: View {
     @ObservedObject var model: IslandModel
+    @ObservedObject var windowActions: WindowActionManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let reportSize: (CGSize) -> Void
 
@@ -64,22 +65,12 @@ struct IslandView: View {
                     .foregroundStyle(.white.opacity(0.85))
                     .transition(.opacity)
             } else if model.state == .expanded {
-                HStack {
-                    Image(systemName: "capsule.fill").foregroundStyle(.white.opacity(0.8))
-                    Text("MacIsland").font(.system(size: 17, weight: .semibold))
-                    Spacer()
-                    Text("V0.2").font(.system(size: 11, weight: .medium, design: .monospaced)).foregroundStyle(.secondary)
-                }
-                Text("基础框架已就绪")
-                    .font(.system(size: 14)).frame(maxWidth: .infinity, alignment: .leading)
-                Text("移开鼠标即可收起")
-                    .font(.system(size: 12)).foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                WindowToolbar(manager: windowActions)
                 Spacer(minLength: 12)
             }
         }
         .padding(.horizontal, 24)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel("MacIsland，\(model.state.rawValue)")
     }
 }

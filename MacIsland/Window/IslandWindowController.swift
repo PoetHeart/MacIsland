@@ -14,6 +14,7 @@ final class IslandWindowController {
     private var isSleeping = false
     private var generation = UUID()
     private let settings: IslandSettings
+    private let windowActions = WindowActionManager()
     private var settingsSubscription: AnyCancellable?
 
     private let pointerLocation: () -> CGPoint
@@ -33,6 +34,8 @@ final class IslandWindowController {
         isVisible = settings.isVisible
         rebuildWindow()
     }
+
+    func requestWindowControlPermission() { windowActions.requestPermission() }
 
     func show() {
         if !settings.isVisible { settings.isVisible = true }
@@ -60,11 +63,11 @@ final class IslandWindowController {
         self.panel = panel
         displaySize = geometry.size(for: .idle)
         let currentGeneration = generation
-        let view = IslandView(model: model) { [weak self] size in
+        let view = IslandView(model: model, windowActions: windowActions) { [weak self] size in
             guard let self, self.generation == currentGeneration else { return }
             self.displaySize = size
         }
-        panel.contentView = NSHostingView(rootView: view)
+        panel.contentView = IslandHostingView(rootView: view)
         panel.orderFrontRegardless()
         startTracking()
     }
@@ -106,6 +109,7 @@ final class IslandWindowController {
             guard let self, let model = self.model else { return }
             do {
                 if inside {
+                    self.windowActions.captureTarget()
                     // Re-entering an expanded island cancels collapse without shrinking it first.
                     if model.state != .expanded {
                         model.state = .compact

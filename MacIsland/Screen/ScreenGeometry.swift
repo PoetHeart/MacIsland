@@ -42,7 +42,7 @@ struct ScreenGeometry {
         switch state {
         case .idle: requested = CGSize(width: idleWidth, height: idleHeight)
         case .compact: requested = CGSize(width: max(idleWidth + 96, 252), height: max(idleHeight + 20, 52))
-        case .expanded: requested = CGSize(width: max(idleWidth + 160, 380), height: max(notchSize.height + 150, 180))
+        case .expanded: requested = CGSize(width: max(idleWidth + 200, 440), height: max(notchSize.height + 154, 186))
         }
         // Dimensions are design choices; screen position and cutout dimensions are never hard-coded.
         return CGSize(width: min(requested.width, screenFrame.width - 24),

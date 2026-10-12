@@ -19,11 +19,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func rebuildMenu() {
         let menu = NSMenu()
-        let title = NSMenuItem(title: "MacIsland · V0.2", action: nil, keyEquivalent: "")
+        let title = NSMenuItem(title: "MacIsland · V0.3", action: nil, keyEquivalent: "")
         title.isEnabled = false
         menu.addItem(title)
         menu.addItem(.separator())
         menu.addItem(item("设置…", #selector(openSettings), key: ","))
+        menu.addItem(item("窗口控制授权…", #selector(authorizeWindowControl)))
         menu.addItem(.separator())
         menu.addItem(item("显示灵动岛", #selector(showIsland)))
         menu.addItem(item("隐藏灵动岛", #selector(hideIsland)))
@@ -42,6 +43,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if settingsWindow == nil { settingsWindow = SettingsWindowController(settings: settings, displays: displays) }
         settingsWindow?.present()
     }
+    @objc private func authorizeWindowControl() { island.requestWindowControlPermission() }
     @objc private func showIsland() { island.show() }
     @objc private func hideIsland() { island.hide() }
     @objc private func quit() { NSApp.terminate(nil) }
