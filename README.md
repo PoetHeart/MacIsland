@@ -1,0 +1,48 @@
+# MacIsland V0.1
+
+原生 macOS 灵动岛基础框架，使用 Swift、SwiftUI、AppKit 和 Apple 公开 API，无第三方依赖。最低 macOS 14.0。
+
+## 打开与运行
+
+打开 `MacIsland.xcodeproj`，选择 MacIsland scheme 和 My Mac，运行即可。
+应用不显示 Dock 图标；菜单栏的胶囊图标提供显示、隐藏和退出。
+鼠标进入黑色轮廓后依次进入 Compact 和 Expanded，移开后回到 Idle。
+本阶段只包含基础界面，没有音乐、电池或后台数据采集功能。
+
+命令行构建（不更改系统 xcode-select）：
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
+  -project MacIsland.xcodeproj -scheme MacIsland \
+  -configuration Release -derivedDataPath build build
+```
+
+本地运行产物位于 `build/Build/Products/Release/MacIsland.app`。采用本机 ad-hoc 签名，未公证；面向他人分发时需自行配置 Developer ID。
+
+## 模块
+
+- App：生命周期、菜单栏入口。
+- Screen：由 NSScreen.frame、safeAreaInsets、auxiliaryTopLeftArea / auxiliaryTopRightArea 计算刘海尺寸与窗口位置。
+- Window：透明、无边框、非激活 NSPanel；鼠标命中、状态切换、防抖、睡眠恢复与显示器变更处理。
+- Island：三态模型、SwiftUI 内容、spring 动画和共享轮廓。
+
+优先选择有刘海的显示器；没有刘海时选择主屏幕。合盖或断开显示器后重新选择，支持负坐标显示器布局。本版本只显示一个灵动岛。刘海屏的文字避开摄像头区域；普通屏顶部居中，黑色区域会占用中间的一小段菜单栏空间。
+
+位置和刘海尺寸来自系统；各状态的内容宽度、间距与圆角是可调整的设计参数。
+
+透明区域及圆角外侧通过 NSPanel.ignoresMouseEvents 穿透。SwiftUI 每帧报告实际动画尺寸供命中检测使用；可见时以 30 Hz 检测系统指针（切换延迟最高约一个采样周期），隐藏或睡眠时停止。无需辅助功能、输入监控或屏幕录制权限。尊重系统“减少动态效果”。
+
+## 验证
+
+执行 `./Tests/run-checks.sh`，覆盖：
+
+- 刘海尺寸、无刘海显示器、负坐标布局、缺失区域信息回退。
+- 三种状态的大小顺序与透明圆角命中。
+- 注入指针位置验证 Idle → Compact → Expanded → Idle。
+- 动画最终尺寸与鼠标命中尺寸一致、鼠标穿透切换。
+- 展开期间隐藏、取消待执行切换、再次显示。
+
+已通过 Xcode 27.0 的 Debug / Release 构建和上述检查，并启动检查内置刘海屏初始窗口。
+UI 自动化指针不改变 NSEvent.mouseLocation，故真实鼠标交互仍需人工验收。外接屏、热插拔、全屏 Space、睡眠唤醒也需相应设备/场景实测；几何测试不代替实机验证。
+
+建议手动验收：缓慢移入刘海下缘与移出、快速反复进出、点击透明边角后的下层应用、菜单显示/隐藏/退出、切换 Space、插拔外接显示器。

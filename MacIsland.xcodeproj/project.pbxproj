@@ -1,0 +1,31 @@
+// !$*UTF8*$!
+{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
+000000000000000000000064 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacIsland/App/MacIslandApp.swift"; sourceTree = SOURCE_ROOT; };
+0000000000000000000000C8 = {isa = PBXBuildFile; fileRef = 000000000000000000000064; };
+000000000000000000000065 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacIsland/App/AppDelegate.swift"; sourceTree = SOURCE_ROOT; };
+0000000000000000000000C9 = {isa = PBXBuildFile; fileRef = 000000000000000000000065; };
+000000000000000000000066 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacIsland/Screen/ScreenGeometry.swift"; sourceTree = SOURCE_ROOT; };
+0000000000000000000000CA = {isa = PBXBuildFile; fileRef = 000000000000000000000066; };
+000000000000000000000067 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacIsland/Island/IslandModel.swift"; sourceTree = SOURCE_ROOT; };
+0000000000000000000000CB = {isa = PBXBuildFile; fileRef = 000000000000000000000067; };
+000000000000000000000068 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacIsland/Island/IslandView.swift"; sourceTree = SOURCE_ROOT; };
+0000000000000000000000CC = {isa = PBXBuildFile; fileRef = 000000000000000000000068; };
+000000000000000000000069 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacIsland/Window/IslandPanel.swift"; sourceTree = SOURCE_ROOT; };
+0000000000000000000000CD = {isa = PBXBuildFile; fileRef = 000000000000000000000069; };
+00000000000000000000006A = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MacIsland/Window/IslandWindowController.swift"; sourceTree = SOURCE_ROOT; };
+0000000000000000000000CE = {isa = PBXBuildFile; fileRef = 00000000000000000000006A; };
+000000000000000000000001 = {isa = PBXProject; attributes = {LastUpgradeCheck = 2700; }; buildConfigurationList = 00000000000000000000000A; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; knownRegions = (en, Base); mainGroup = 000000000000000000000002; productRefGroup = 000000000000000000000003; projectDirPath = ""; projectRoot = ""; targets = (000000000000000000000005); };
+000000000000000000000002 = {isa = PBXGroup; children = (000000000000000000000064, 000000000000000000000065, 000000000000000000000066, 000000000000000000000067, 000000000000000000000068, 000000000000000000000069, 00000000000000000000006A, 000000000000000000000003); sourceTree = "<group>"; };
+000000000000000000000003 = {isa = PBXGroup; children = (000000000000000000000004); name = Products; sourceTree = "<group>"; };
+000000000000000000000004 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
+000000000000000000000005 = {isa = PBXNativeTarget; buildConfigurationList = 00000000000000000000000B; buildPhases = (000000000000000000000006, 000000000000000000000007, 000000000000000000000008); buildRules = (); dependencies = (); name = MacIsland; productName = MacIsland; productReference = 000000000000000000000004; productType = "com.apple.product-type.application"; };
+000000000000000000000006 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (0000000000000000000000C8, 0000000000000000000000C9, 0000000000000000000000CA, 0000000000000000000000CB, 0000000000000000000000CC, 0000000000000000000000CD, 0000000000000000000000CE); runOnlyForDeploymentPostprocessing = 0; };
+000000000000000000000007 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+000000000000000000000008 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+00000000000000000000000A = {isa = XCConfigurationList; buildConfigurations = (00000000000000000000000C, 00000000000000000000000D); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+00000000000000000000000B = {isa = XCConfigurationList; buildConfigurations = (00000000000000000000000E, 00000000000000000000000F); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+00000000000000000000000C = {isa = XCBuildConfiguration; name = Debug; buildSettings = {SDKROOT = macosx; MACOSX_DEPLOYMENT_TARGET = 14.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }; };
+00000000000000000000000D = {isa = XCBuildConfiguration; name = Release; buildSettings = {SDKROOT = macosx; MACOSX_DEPLOYMENT_TARGET = 14.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }; };
+00000000000000000000000E = {isa = XCBuildConfiguration; name = Debug; buildSettings = {PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.macisland.app; INFOPLIST_FILE = MacIsland/Info.plist; GENERATE_INFOPLIST_FILE = NO; CODE_SIGN_STYLE = Automatic; CODE_SIGN_IDENTITY = "-"; ENABLE_HARDENED_RUNTIME = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; SWIFT_EMIT_LOC_STRINGS = YES; }; };
+00000000000000000000000F = {isa = XCBuildConfiguration; name = Release; buildSettings = {PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.macisland.app; INFOPLIST_FILE = MacIsland/Info.plist; GENERATE_INFOPLIST_FILE = NO; CODE_SIGN_STYLE = Automatic; CODE_SIGN_IDENTITY = "-"; ENABLE_HARDENED_RUNTIME = YES; SWIFT_OPTIMIZATION_LEVEL = "-O"; SWIFT_EMIT_LOC_STRINGS = YES; }; };
+}; rootObject = 000000000000000000000001; }
