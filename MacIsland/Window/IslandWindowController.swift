@@ -7,6 +7,9 @@ final class IslandWindowController {
     private(set) var panel: IslandPanel?
     private(set) var model: IslandModel?
     private var pointerTimer: Timer?
+    private var localMouseMonitor: Any?
+    private var globalMouseMonitor: Any?
+    private var surfacePath = Path()
     private var transition: Task<Void, Never>?
     private(set) var displaySize: CGSize = .zero
     private var pointerInside = false
@@ -63,10 +66,12 @@ final class IslandWindowController {
         self.model = model
         self.panel = panel
         displaySize = geometry.size(for: .idle)
+        surfacePath = IslandOutline().path(in: CGRect(origin: .zero, size: displaySize))
         let currentGeneration = generation
         let view = IslandView(model: model, windowActions: windowActions) { [weak self] size in
             guard let self, self.generation == currentGeneration else { return }
             self.displaySize = size
+            self.surfacePath = IslandOutline().path(in: CGRect(origin: .zero, size: size))
         }
         panel.contentView = IslandHostingView(rootView: view)
         panel.orderFrontRegardless()
@@ -75,7 +80,15 @@ final class IslandWindowController {
 
     private func startTracking() {
         guard settings.hoverEnabled else { return }
-        // One cheap point-in-path check per tick. No event tap, Accessibility permission, or global keyboard monitor.
+        // React immediately to mouse movement; keep a low-frequency fallback for stationary pointers.
+        let events: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged]
+        globalMouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: events) { [weak self] _ in
+            MainActor.assumeIsolated { self?.checkPointer() }
+        }
+        localMouseMonitor = NSEvent.addLocalMonitorForEvents(matching: events) { [weak self] event in
+            MainActor.assumeIsolated { self?.checkPointer() }
+            return event
+        }
         let timer = Timer(timeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.checkPointer() }
         }
@@ -86,6 +99,10 @@ final class IslandWindowController {
     }
 
     private func stopTracking() {
+        if let monitor = globalMouseMonitor { NSEvent.removeMonitor(monitor) }
+        if let monitor = localMouseMonitor { NSEvent.removeMonitor(monitor) }
+        globalMouseMonitor = nil
+        localMouseMonitor = nil
         pointerTimer?.invalidate()
         pointerTimer = nil
         transition?.cancel()
@@ -102,7 +119,7 @@ final class IslandWindowController {
         let mouse = pointerLocation()
         let local = CGPoint(x: mouse.x - (model.geometry.centerX - displaySize.width / 2), y: model.geometry.top - mouse.y)
         let onSurface = model.state != .idle
-            && IslandOutline().path(in: CGRect(origin: .zero, size: displaySize)).contains(local)
+            && surfacePath.contains(local)
         let inside = model.geometry.containsActivationPoint(mouse) || onSurface
         // The invisible trigger observes the pointer but never blocks clicks underneath.
         panel.ignoresMouseEvents = !onSurface
@@ -123,8 +140,7 @@ final class IslandWindowController {
                 } else {
                     // Debounce the edge so the spring and small pointer movements cannot flicker.
                     try await Task.sleep(for: .milliseconds(150))
-                    model.state = .compact
-                    try await Task.sleep(for: .milliseconds(180))
+                    // Collapse in one continuous motion instead of pausing at Compact.
                     model.state = .idle
                 }
             } catch { /* Re-entry, hiding, or display changes cancel the pending transition. */ }
@@ -151,6 +167,8 @@ final class IslandWindowController {
     }
 
     deinit {
+        if let monitor = globalMouseMonitor { NSEvent.removeMonitor(monitor) }
+        if let monitor = localMouseMonitor { NSEvent.removeMonitor(monitor) }
         pointerTimer?.invalidate()
         transition?.cancel()
         NotificationCenter.default.removeObserver(self)

@@ -104,6 +104,26 @@ struct FrameworkChecks {
         mouse = CGPoint(x: -10000, y: -10000)
         try await Task.sleep(for: .milliseconds(900))
         precondition(controller.model?.state == .idle)
+        // Reverse an in-flight collapse, then repeatedly interrupt pending expansion.
+        mouse = CGPoint(x: geometry.centerX, y: geometry.top)
+        try await Task.sleep(for: .milliseconds(700))
+        mouse = CGPoint(x: -10000, y: -10000)
+        try await Task.sleep(for: .milliseconds(230))
+        precondition(controller.model?.state == .idle, "Collapse must go directly to Idle")
+        mouse = CGPoint(x: geometry.centerX, y: geometry.top)
+        try await Task.sleep(for: .milliseconds(750))
+        precondition(controller.model?.state == .expanded)
+        for _ in 0..<4 {
+            mouse = CGPoint(x: -10000, y: -10000)
+            try await Task.sleep(for: .milliseconds(210))
+            mouse = CGPoint(x: geometry.centerX, y: geometry.top)
+            try await Task.sleep(for: .milliseconds(70))
+        }
+        mouse = CGPoint(x: -10000, y: -10000)
+        try await Task.sleep(for: .milliseconds(850))
+        precondition(controller.model?.state == .idle && controller.panel?.ignoresMouseEvents == true)
+        precondition(abs(controller.displaySize.height - geometry.size(for: .idle).height) < 1)
+        print("PASS: continuous collapse, spring reversal and repeated interrupted hover settling")
         // Hide while expansion is pending; reopening must reset to idle.
         mouse = CGPoint(x: geometry.centerX, y: geometry.top - 2)
         try await Task.sleep(for: .milliseconds(70))

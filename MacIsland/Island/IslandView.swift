@@ -32,7 +32,7 @@ private struct IslandSurface: AnimatableModifier {
     func body(content: Content) -> some View {
         let size = CGSize(width: width, height: height)
         content
-            .frame(width: max(1, width), height: max(1, height))
+            .frame(width: max(1, width), height: max(1, height), alignment: .top)
             .background(.black, in: IslandOutline())
             .clipShape(IslandOutline())
             .onChange(of: size, initial: true) { _, value in reportSize(value) }
@@ -51,28 +51,29 @@ struct IslandView: View {
             Color.clear
             content
                 .modifier(IslandSurface(width: size.width, height: size.height, reportSize: reportSize))
+                .animation(!model.animationsEnabled ? nil : reduceMotion ? .easeOut(duration: 0.12)
+                           : .interactiveSpring(response: 0.34, dampingFraction: 0.9, blendDuration: 0.12), value: model.state)
                 .opacity(model.state == .idle ? 0 : 1)
-                .allowsHitTesting(model.state != .idle)
-                .accessibilityHidden(model.state == .idle)
-                .animation(!model.animationsEnabled ? nil : reduceMotion ? .easeOut(duration: 0.12) : .spring(response: 0.42, dampingFraction: 0.82), value: model.state)
+                .animation(model.animationsEnabled ? .easeOut(duration: 0.16) : nil, value: model.state == .idle)
+                .allowsHitTesting(model.state == .expanded)
+                .accessibilityHidden(model.state != .expanded)
         }
         .preferredColorScheme(.dark)
     }
 
     private var content: some View {
-        VStack(spacing: 12) {
-            // Keep all labels below the physical camera housing.
-            Spacer(minLength: model.geometry.hasNotch ? model.geometry.notchSize.height + 8 : 8)
-            if model.state == .compact {
-                Text("MacIsland").font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.85))
-                    .transition(.opacity)
-            } else if model.state == .expanded {
-                WindowToolbar(manager: windowActions)
-                Spacer(minLength: 12)
-            }
+        let expandedSize = model.geometry.size(for: .expanded)
+        // Keep controls laid out at their final size. Animate only the surrounding clip,
+        // so text and buttons do not reflow or compress on every spring frame.
+        return VStack(spacing: 0) {
+            Color.clear.frame(height: model.geometry.hasNotch ? model.geometry.notchSize.height + 14 : 18)
+            WindowToolbar(manager: windowActions)
+                .padding(.horizontal, 24)
+                .opacity(model.state == .expanded ? 1 : 0)
+                .animation(model.animationsEnabled ? .easeOut(duration: 0.14) : nil, value: model.state == .expanded)
+            Spacer(minLength: 12)
         }
-        .padding(.horizontal, 24)
+        .frame(width: expandedSize.width, height: expandedSize.height, alignment: .top)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("MacIsland，\(model.state.rawValue)")
     }
