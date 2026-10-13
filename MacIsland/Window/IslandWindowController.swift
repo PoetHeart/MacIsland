@@ -13,6 +13,8 @@ final class IslandWindowController {
     private var transition: Task<Void, Never>?
     private(set) var displaySize: CGSize = .zero
     private var pointerInside = false
+    private var presentingDrag = false
+    private var mouseReleasedAt: Date?
     private var isVisible = false
     private var isSleeping = false
     private var generation = UUID()
@@ -81,12 +83,12 @@ final class IslandWindowController {
     private func startTracking() {
         guard settings.hoverEnabled else { return }
         // React immediately to mouse movement; keep a low-frequency fallback for stationary pointers.
-        let events: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged]
-        globalMouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: events) { [weak self] _ in
-            MainActor.assumeIsolated { self?.checkPointer() }
+        let events: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDown, .leftMouseUp, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged, .keyDown]
+        globalMouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: events) { [weak self] event in
+            MainActor.assumeIsolated { self?.handleMouseEvent(event) }
         }
         localMouseMonitor = NSEvent.addLocalMonitorForEvents(matching: events) { [weak self] event in
-            MainActor.assumeIsolated { self?.checkPointer() }
+            MainActor.assumeIsolated { self?.handleMouseEvent(event) }
             return event
         }
         let timer = Timer(timeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
@@ -98,7 +100,36 @@ final class IslandWindowController {
         checkPointer()
     }
 
+    private func handleMouseEvent(_ event: NSEvent) {
+        let mouse = pointerLocation()
+        switch event.type {
+        case .keyDown:
+            guard event.keyCode == 53, windowActions.isTrackingDrag else { return }
+            windowActions.cancelDrag()
+            presentingDrag = false
+            transition?.cancel()
+            model?.state = .idle
+            return
+        case .leftMouseDown:
+            mouseReleasedAt = nil
+            windowActions.beginDrag(at: mouse)
+        case .leftMouseDragged: windowActions.sampleDrag(at: mouse)
+        case .leftMouseUp:
+            if let geometry = model?.geometry {
+                let action = presentingDrag ? WindowDragGeometry.selection(at: mouse, geometry: geometry) : nil
+                windowActions.finishDrag(action: action, destination: geometry.screenFrame)
+            }
+            presentingDrag = false
+            pointerInside = false
+        default: break
+        }
+        checkPointer()
+    }
+
     private func stopTracking() {
+        windowActions.cancelDrag()
+        presentingDrag = false
+        mouseReleasedAt = nil
         if let monitor = globalMouseMonitor { NSEvent.removeMonitor(monitor) }
         if let monitor = localMouseMonitor { NSEvent.removeMonitor(monitor) }
         globalMouseMonitor = nil
@@ -117,6 +148,32 @@ final class IslandWindowController {
             return
         }
         let mouse = pointerLocation()
+        if windowActions.isTrackingDrag {
+            if NSEvent.pressedMouseButtons & 1 == 0 {
+                // Give queued mouse-up delivery a short grace period before cancelling a lost event.
+                if mouseReleasedAt == nil { mouseReleasedAt = Date() }
+                if Date().timeIntervalSince(mouseReleasedAt!) < 0.15 { return }
+                windowActions.cancelDrag()
+                presentingDrag = false
+            } else {
+                mouseReleasedAt = nil
+                windowActions.sampleDrag(at: mouse)
+                let nearTop = CGRect(x: model.geometry.centerX - model.geometry.size(for: .expanded).width / 2,
+                                     y: model.geometry.top - model.geometry.notchSize.height - 64,
+                                     width: model.geometry.size(for: .expanded).width, height: model.geometry.notchSize.height + 64)
+                if windowActions.isWindowDrag && (nearTop.contains(mouse) || model.geometry.containsActivationPoint(mouse)) {
+                    presentingDrag = true
+                }
+                panel.ignoresMouseEvents = true
+                if presentingDrag {
+                    transition?.cancel()
+                    model.state = .expanded
+                    let selection = WindowDragGeometry.selection(at: mouse, geometry: model.geometry)
+                    if windowActions.dragSelection != selection { windowActions.dragSelection = selection }
+                }
+                return
+            }
+        }
         let local = CGPoint(x: mouse.x - (model.geometry.centerX - displaySize.width / 2), y: model.geometry.top - mouse.y)
         let onSurface = model.state != .idle
             && surfacePath.contains(local)

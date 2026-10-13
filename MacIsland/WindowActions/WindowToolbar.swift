@@ -6,7 +6,7 @@ struct WindowToolbar: View {
     var body: some View {
         VStack(spacing: 10) {
             HStack(spacing: 8) {
-                ForEach(WindowAction.allCases) { action in
+                ForEach(manager.isWindowDrag ? WindowDragGeometry.actions : WindowAction.allCases) { action in
                     Button { manager.perform(action) } label: {
                         VStack(spacing: 12) {
                             WindowActionIcon(action: action).frame(width: 28, height: 19)
@@ -16,11 +16,15 @@ struct WindowToolbar: View {
                         .contentShape(RoundedRectangle(cornerRadius: 10))
                     }
                     .buttonStyle(WindowTileStyle())
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(manager.dragSelection == action ? Color.accentColor : .clear, lineWidth: 2))
                     .disabled(!manager.canPerform)
                     .help(manager.text("调整当前应用窗口：") + manager.text(action.title))
                 }
             }
-            if !manager.isTrusted {
+            if manager.isWindowDrag {
+                Text(manager.text(manager.dragSelection == nil ? "拖到按钮上，松手应用；移出取消" : "松手应用所选布局"))
+                    .font(.system(size: 11)).foregroundStyle(.white.opacity(0.8))
+            } else if !manager.isTrusted {
                 Button(manager.message.isEmpty ? manager.text("开启窗口控制 · 需要辅助功能权限") : manager.text("请在系统设置的“辅助功能”中开启 MacIsland")) { manager.requestPermission() }
                     .buttonStyle(.plain).font(.system(size: 11)).foregroundStyle(.white)
             } else {

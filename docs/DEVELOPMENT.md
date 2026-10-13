@@ -1,6 +1,6 @@
 [简体中文介绍](../README.md) · [English](../README.en.md)
 
-# MacIsland V0.4
+# MacIsland V0.5
 
 原生 macOS 灵动岛基础框架，使用 Swift、SwiftUI、AppKit 和 Apple 公开 API，无第三方依赖。最低 macOS 14.0。
 
@@ -73,3 +73,5 @@ UI 自动化指针不改变 NSEvent.mouseLocation，故真实鼠标交互仍需�
 设置变更会重置灵动岛到 Idle；显示器切换、隐藏和睡眠都会取消未完成的展开任务。
 
 建议手动验收：缓慢移入刘海下缘与移出、快速反复进出、点击透明边角后的下层应用、菜单显示/隐藏/退出、切换 Space、插拔外接显示器。
+
+拖窗功能使用公开 NSEvent 监听鼠标与 Esc（不记录键入内容）、AX 获取实际窗口位置验证拖动；取消或过期回调以会话标识隔离。恢复历史在窗口动作串行队列中按 AX 元素身份区分，不跨窗口共享。

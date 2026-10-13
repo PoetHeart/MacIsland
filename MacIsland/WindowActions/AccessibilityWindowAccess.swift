@@ -4,6 +4,29 @@ import ApplicationServices
 /// Used only on the dedicated window-action queue, never on the SwiftUI rendering thread.
 struct AccessibilityWindowAccess: WindowAccess {
     typealias Window = AXUIElement
+    func sameWindow(_ lhs: AXUIElement, _ rhs: AXUIElement) -> Bool { CFEqual(lhs, rhs) }
+
+    func windowUnderPointer(_ point: CGPoint) -> (AXUIElement, pid_t)? {
+        let system = AXUIElementCreateSystemWide()
+        AXUIElementSetMessagingTimeout(system, 0.2)
+        var hit: AXUIElement?
+        guard AXUIElementCopyElementAtPosition(system, Float(point.x), Float(point.y), &hit) == .success,
+              var current = hit else { return nil }
+        for _ in 0..<8 {
+            AXUIElementSetMessagingTimeout(current, 0.2)
+            if value(kAXRoleAttribute, of: current) as? String == kAXWindowRole {
+                var pid: pid_t = 0
+                guard AXUIElementGetPid(current, &pid) == .success, isAdjustable(current),
+                      let rect = try? frame(of: current), point.x >= rect.minX, point.x <= rect.maxX,
+                      point.y >= rect.minY, point.y <= rect.minY + 48 else { return nil }
+                return (current, pid)
+            }
+            if let window = element(kAXWindowAttribute, of: current) { current = window }
+            else if let parent = element(kAXParentAttribute, of: current) { current = parent }
+            else { return nil }
+        }
+        return nil
+    }
 
     private func value(_ attribute: String, of element: AXUIElement) -> CFTypeRef? {
         var value: CFTypeRef?

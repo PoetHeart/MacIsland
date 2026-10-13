@@ -39,6 +39,10 @@ enum AppText {
         (Locale.preferredLanguages.first ?? "en").hasPrefix("zh") ? "zh-Hans" : "en"
     }
     static let english: [String: String] = [
+        "已恢复原窗口": "Original window restored",
+        "拖动已取消": "Drag cancelled",
+        "拖到按钮上，松手应用；移出取消": "Drag over a button and release; move away to cancel",
+        "松手应用所选布局": "Release to apply the selected layout",
         "显示": "Display",
         "显示灵动岛": "Show Island",
         "所在显示器": "Display selection",

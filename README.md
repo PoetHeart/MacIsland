@@ -1,12 +1,17 @@
 # MacIsland
 
-**把窗口管理放进 Mac 的刘海。** 原生 macOS 悬浮工具栏，平时隐形，鼠标移到屏幕顶部即可展开。
+**把窗口拖到屏幕顶部，松手就能分屏或居中；再点一次，还原窗口。**
+
+MacIsland 是一个轻量的 Mac 窗口整理工具。平时不显示黑块，需要时移到刘海或顶部中央就能用。
 
 **简体中文 · [English](README.en.md)**
 
 [下载最新版 DMG](https://github.com/PoetHeart/MacIsland/releases/latest) · [功能与更新记录](https://github.com/PoetHeart/MacIsland/releases) · [反馈问题](https://github.com/PoetHeart/MacIsland/issues)
 
 ## 你可以做什么
+
+- **拖动就能分屏**：按住窗口标题栏拖到顶部，移到左半屏、居中或右半屏按钮上，松手应用。移到操作区外松手，或按 Esc 取消。
+- **再点一次还原**：对同一窗口再次点击刚用过的布局，恢复调整前的位置和大小。手动移动或缩放窗口后，会以新位置作为下一次恢复起点。
 
 - **左半屏、铺满屏幕、居中、右半屏**：快速整理当前应用窗口，不抢走目标应用焦点。
 - **可调居中大小**：默认宽、高各为屏幕可用区域的 60%，可在 30%–100% 之间调整并保存。
@@ -19,7 +24,7 @@ Swift + SwiftUI + AppKit，公开 Apple API，无第三方依赖。没有音乐�
 
 ## 下载与安装
 
-1. 从 [GitHub Releases](https://github.com/PoetHeart/MacIsland/releases/latest) 下载 `MacIsland-0.4.0-universal.dmg`。
+1. 从 [GitHub Releases](https://github.com/PoetHeart/MacIsland/releases/latest) 下载 `MacIsland-0.5.0-universal.dmg`。
 2. 打开 DMG，将 **MacIsland.app** 拖到 **Applications**。
 3. 从“应用程序”启动 MacIsland。菜单栏胶囊图标提供设置、显示、隐藏和退出。
 4. 要控制其他应用窗口，点击“窗口控制授权…”，在系统设置的“隐私与安全性 → 辅助功能”中手动允许 MacIsland。
@@ -33,6 +38,8 @@ Swift + SwiftUI + AppKit，公开 Apple API，无第三方依赖。没有音乐�
 选择目标应用窗口，然后把鼠标移到刘海或屏幕顶部中央。无刘海屏幕的触发区为顶部中央约 132 × 4 点；透明区不拦截点击。
 
 “铺满屏幕”使用菜单栏和 Dock 之外的可用区域，不进入独立全屏 Space。窗口的最小尺寸、全屏状态及应用自身限制可能阻止调整；界面会反馈失败。基础悬停无需权限，窗口控制仅需辅助功能权限，不需要录屏权限。
+
+拖动与恢复同样需要辅助功能权限，并要求启用悬停。只有标题栏附近开始、窗口位置随鼠标实际移动且大小不变的拖动才会激活；不同应用的自定义标题栏可能不支持。拖动操作区保持鼠标穿透，不接管原窗口的鼠标释放事件。恢复记录按窗口保存在本次运行内（最多 32 个窗口），重启后清空；原屏幕断开时将恢复窗口限制在可用屏幕内。
 
 ## 开发与验证
 
