@@ -27,6 +27,17 @@ func checkWindowActions() throws {
     let external = WindowScreen(frame: CGRect(x: -1920, y: -180, width: 1920, height: 1080),
                                 visibleFrame: CGRect(x: -1920, y: -155, width: 1920, height: 1000))
     precondition(WindowLayout.accessibilityRect(CGRect(x: -1920, y: 0, width: 1920, height: 1080), primaryTop: 900) == external.frame)
+    // Preview and applied AX bounds must agree on offset displays and odd dimensions.
+    for screen in [primary, external] {
+        let visible = WindowLayout.accessibilityRect(screen.visibleFrame, primaryTop: 900)
+        for action in WindowDragGeometry.actions {
+            for ratio in [0.3, 0.6, 1.0] {
+                let preview = WindowLayout.previewFrame(for: action, visibleFrame: visible, primaryTop: 900, centerRatio: ratio)
+                precondition(WindowLayout.accessibilityRect(preview, primaryTop: 900)
+                    == WindowLayout.frame(for: action, in: screen.visibleFrame, centerRatio: ratio))
+            }
+        }
+    }
     let area = CGRect(x: -1001, y: 25, width: 1001, height: 700)
     let left = WindowLayout.frame(for: .left, in: area)
     let right = WindowLayout.frame(for: .right, in: area)

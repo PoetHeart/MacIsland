@@ -14,6 +14,7 @@ final class IslandWindowController {
     private(set) var displaySize: CGSize = .zero
     private var pointerInside = false
     private var presentingDrag = false
+    private let dragPreview = WindowPreviewController()
     private var mouseReleasedAt: Date?
     private var isVisible = false
     private var isSleeping = false
@@ -105,6 +106,7 @@ final class IslandWindowController {
         switch event.type {
         case .keyDown:
             guard event.keyCode == 53, windowActions.isTrackingDrag else { return }
+            dragPreview.hide()
             windowActions.cancelDrag()
             presentingDrag = false
             transition?.cancel()
@@ -115,8 +117,9 @@ final class IslandWindowController {
             windowActions.beginDrag(at: mouse)
         case .leftMouseDragged: windowActions.sampleDrag(at: mouse)
         case .leftMouseUp:
+            dragPreview.hide()
             if let geometry = model?.geometry {
-                let action = presentingDrag ? WindowDragGeometry.selection(at: mouse, geometry: geometry) : nil
+                let action = presentingDrag && windowActions.isWindowDrag ? WindowDragGeometry.selection(at: mouse, geometry: geometry) : nil
                 windowActions.finishDrag(action: action, destination: geometry.screenFrame)
             }
             presentingDrag = false
@@ -127,6 +130,7 @@ final class IslandWindowController {
     }
 
     private func stopTracking() {
+        dragPreview.hide()
         windowActions.cancelDrag()
         presentingDrag = false
         mouseReleasedAt = nil
@@ -154,6 +158,7 @@ final class IslandWindowController {
                 if mouseReleasedAt == nil { mouseReleasedAt = Date() }
                 if Date().timeIntervalSince(mouseReleasedAt!) < 0.15 { return }
                 windowActions.cancelDrag()
+                dragPreview.hide()
                 presentingDrag = false
             } else {
                 mouseReleasedAt = nil
@@ -165,11 +170,21 @@ final class IslandWindowController {
                     presentingDrag = true
                 }
                 panel.ignoresMouseEvents = true
-                if presentingDrag {
+                if presentingDrag && windowActions.isWindowDrag {
                     transition?.cancel()
                     model.state = .expanded
                     let selection = WindowDragGeometry.selection(at: mouse, geometry: model.geometry)
                     if windowActions.dragSelection != selection { windowActions.dragSelection = selection }
+                    if let selection,
+                       let screen = NSScreen.screens.first(where: { $0.frame == model.geometry.screenFrame }) {
+                        dragPreview.show(frame: WindowLayout.previewFrame(for: selection,
+                            visibleFrame: screen.visibleFrame,
+                            primaryTop: NSScreen.screens.first?.frame.maxY ?? 0,
+                            centerRatio: settings.effectiveCenterRatio), animated: settings.animationsEnabled)
+                    } else { dragPreview.hide() }
+                } else {
+                    dragPreview.hide()
+                    windowActions.dragSelection = nil
                 }
                 return
             }

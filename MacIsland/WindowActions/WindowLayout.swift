@@ -24,6 +24,13 @@ enum WindowLayout {
         CGRect(x: rect.minX, y: primaryTop - rect.maxY, width: rect.width, height: rect.height)
     }
 
+    /// Convert through the same AX layout calculation used when the drag is released.
+    static func previewFrame(for action: WindowAction, visibleFrame: CGRect,
+                             primaryTop: CGFloat, centerRatio: Double) -> CGRect {
+        let area = accessibilityRect(visibleFrame, primaryTop: primaryTop)
+        return accessibilityRect(frame(for: action, in: area, centerRatio: centerRatio), primaryTop: primaryTop)
+    }
+
     static func screenIndex(for frame: CGRect, screens: [WindowScreen]) -> Int? {
         screens.indices.max { a, b in
             intersectionArea(frame, screens[a].frame) < intersectionArea(frame, screens[b].frame)

@@ -11,6 +11,7 @@ A lightweight Mac window organizer that stays invisible until you need it.
 ## Features
 
 - **Drag to arrange:** drag a window by its title bar to the top, choose Left Half, Center or Right Half, and release. Release outside the controls or press Esc to cancel.
+- **Drag preview (source build):** see translucent target bounds before releasing, including your custom center size; leaving the controls or cancelling hides the preview.
 - **Click again to restore:** repeat the same layout on the same window to restore its previous position and size. Manual movement or resizing starts a fresh baseline.
 
 - **Left Half, Fill Screen, Center and Right Half** for the active application window, without stealing focus.

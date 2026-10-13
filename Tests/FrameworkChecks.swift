@@ -80,6 +80,18 @@ struct FrameworkChecks {
         let controller = IslandWindowController(settings: settings, pointerLocation: { mouse })
         defer { controller.shutdown() }
         print("PASS: preference persistence and invalid delay clamping")
+        let preview = WindowPreviewController()
+        let previewFrame = CGRect(x: 100, y: 100, width: 401, height: 300)
+        preview.show(frame: previewFrame, animated: false)
+        precondition(preview.panel?.frame == previewFrame && preview.panel?.isVisible == true)
+        precondition(preview.panel?.ignoresMouseEvents == true && preview.panel?.canBecomeKey == false)
+        preview.hide()
+        precondition(preview.panel?.isVisible == false)
+        preview.show(frame: previewFrame.offsetBy(dx: 200, dy: 0), animated: true)
+        preview.hide()
+        try await Task.sleep(for: .milliseconds(200))
+        precondition(preview.panel?.isVisible == false, "Cancelled preview must stay hidden")
+        print("PASS: preview bounds, click-through and cancellation")
         controller.show()
         guard let geometry = controller.model?.geometry else { fatalError("No screen available") }
         try await Task.sleep(for: .milliseconds(100))
