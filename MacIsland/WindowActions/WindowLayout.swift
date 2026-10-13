@@ -1,12 +1,13 @@
 import Foundation
 
 enum WindowAction: String, CaseIterable, Identifiable {
-    case left, fill, right
+    case left, fill, center, right
     var id: String { rawValue }
     var title: String {
         switch self {
         case .left: return "左半屏"
         case .fill: return "铺满屏幕"
+        case .center: return "居中"
         case .right: return "右半屏"
         }
     }
@@ -34,12 +35,21 @@ enum WindowLayout {
         return intersection.isNull ? 0 : intersection.width * intersection.height
     }
 
-    static func frame(for action: WindowAction, in area: CGRect) -> CGRect {
+    static func normalizedCenterRatio(_ ratio: Double) -> Double {
+        ratio.isFinite ? min(1, max(0.3, ratio)) : 0.6
+    }
+
+    static func frame(for action: WindowAction, in area: CGRect, centerRatio: Double = 0.6) -> CGRect {
         let half = floor(area.width / 2)
         switch action {
         case .left: return CGRect(x: area.minX, y: area.minY, width: half, height: area.height)
         case .right: return CGRect(x: area.minX + half, y: area.minY, width: area.width - half, height: area.height)
         case .fill: return area
+        case .center:
+            let ratio = normalizedCenterRatio(centerRatio)
+            let width = floor(area.width * ratio)
+            let height = floor(area.height * ratio)
+            return CGRect(x: area.midX - width / 2, y: area.midY - height / 2, width: width, height: height)
         }
     }
 
@@ -77,7 +87,7 @@ struct WindowActionResult {
 struct WindowActionExecutor<Access: WindowAccess> {
     let access: Access
 
-    func perform(_ action: WindowAction, pid: Int32, screens: [WindowScreen]) throws -> WindowActionResult {
+    func perform(_ action: WindowAction, pid: Int32, screens: [WindowScreen], centerRatio: Double = 0.6) throws -> WindowActionResult {
         let focused = try access.focusedWindow(pid: pid)
         let original = try access.frame(of: focused)
         guard let screenIndex = WindowLayout.screenIndex(for: original, screens: screens),
@@ -86,7 +96,7 @@ struct WindowActionExecutor<Access: WindowAccess> {
         guard access.isAdjustable(focused), !WindowLayout.approximatelyEqual(original, screen.frame) else {
             throw WindowActionError.unsupported
         }
-        let frame = WindowLayout.frame(for: action, in: screen.visibleFrame)
+        let frame = WindowLayout.frame(for: action, in: screen.visibleFrame, centerRatio: centerRatio)
         try access.setFrame(frame, of: focused)
         let completed = WindowLayout.approximatelyEqual(try access.frame(of: focused), frame)
         return WindowActionResult(applied: completed ? 1 : 0, failed: completed ? 0 : 1,

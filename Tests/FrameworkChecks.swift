@@ -49,6 +49,9 @@ struct FrameworkChecks {
         let defaults = UserDefaults(suiteName: suite)!
         defer { defaults.removePersistentDomain(forName: suite) }
         let settings = IslandSettings(defaults: defaults)
+        precondition(settings.centerRatio == 0.6)
+        settings.centerRatio = 0.75
+        precondition(IslandSettings(defaults: defaults).centerRatio == 0.75)
         settings.displaySelection = "external"
         settings.hoverDelay = 0.3
         settings.animationsEnabled = false

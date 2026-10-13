@@ -14,13 +14,14 @@ final class IslandWindowController {
     private var isSleeping = false
     private var generation = UUID()
     private let settings: IslandSettings
-    private let windowActions = WindowActionManager()
+    private let windowActions: WindowActionManager
     private var settingsSubscription: AnyCancellable?
 
     private let pointerLocation: () -> CGPoint
 
     init(settings: IslandSettings, pointerLocation: @escaping () -> CGPoint = { NSEvent.mouseLocation }) {
         self.settings = settings
+        self.windowActions = WindowActionManager(settings: settings)
         self.pointerLocation = pointerLocation
         settingsSubscription = settings.objectWillChange
             .debounce(for: .milliseconds(80), scheduler: RunLoop.main)

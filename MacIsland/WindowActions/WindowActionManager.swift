@@ -11,6 +11,9 @@ final class WindowActionManager: ObservableObject {
     private var targetPID: pid_t?
     private let queue = DispatchQueue(label: "com.macisland.window-actions", qos: .userInitiated)
 
+    private let settings: IslandSettings
+    init(settings: IslandSettings) { self.settings = settings }
+
     var canPerform: Bool { isTrusted && targetPID != nil && !isBusy }
 
     func captureTarget() {
@@ -49,13 +52,14 @@ final class WindowActionManager: ObservableObject {
             WindowScreen(frame: WindowLayout.accessibilityRect($0.frame, primaryTop: primaryTop),
                          visibleFrame: WindowLayout.accessibilityRect($0.visibleFrame, primaryTop: primaryTop))
         }
+        let centerRatio = settings.effectiveCenterRatio
         isBusy = true
         message = "正在调整…"
         queue.async { [weak self] in
             let result: String
             do {
                 result = try WindowActionExecutor(access: AccessibilityWindowAccess())
-                    .perform(action, pid: pid, screens: screens).message
+                    .perform(action, pid: pid, screens: screens, centerRatio: centerRatio).message
             } catch { result = error.localizedDescription }
             DispatchQueue.main.async {
                 self?.message = result

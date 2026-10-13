@@ -30,7 +30,20 @@ func checkWindowActions() throws {
     let left = WindowLayout.frame(for: .left, in: area)
     let right = WindowLayout.frame(for: .right, in: area)
     precondition(left.width + right.width == area.width && left.maxX == right.minX && right.maxX == area.maxX)
-    for action in [WindowAction.left, .fill, .right] {
+    for ratio in [0.3, 0.6, 0.85, 1.0] {
+        let centered = WindowLayout.frame(for: .center, in: area, centerRatio: ratio)
+        precondition(centered.midX == area.midX && centered.midY == area.midY)
+        precondition(centered.width == floor(area.width * ratio) && centered.height == floor(area.height * ratio))
+    }
+    precondition(WindowLayout.normalizedCenterRatio(.nan) == 0.6)
+    precondition(WindowLayout.normalizedCenterRatio(0) == 0.3)
+    precondition(WindowLayout.normalizedCenterRatio(2) == 1)
+    let custom = FakeWindow(CGRect(x: -1600, y: 0, width: 800, height: 600))
+    let customResult = try WindowActionExecutor(access: FakeAccess(windows: [custom]))
+        .perform(.center, pid: 1, screens: [primary, external], centerRatio: 0.8)
+    precondition(customResult.applied == 1)
+    precondition(custom.frame == WindowLayout.frame(for: .center, in: external.visibleFrame, centerRatio: 0.8))
+    for action in [WindowAction.left, .fill, .center, .right] {
         let window = FakeWindow(CGRect(x: -1600, y: 0, width: 800, height: 600))
         let result = try WindowActionExecutor(access: FakeAccess(windows: [window])).perform(action, pid: 1, screens: [primary, external])
         precondition(result.applied == 1 && result.failed == 0)

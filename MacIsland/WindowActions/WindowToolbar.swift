@@ -64,6 +64,10 @@ private struct WindowActionIcon: View {
                     Rectangle().frame(width: (width - 6) / 2, height: height - 6).padding(.leading, 3)
                 case .right:
                     Rectangle().frame(width: (width - 6) / 2, height: height - 6).offset(x: width / 2, y: 0)
+                case .center:
+                    RoundedRectangle(cornerRadius: 1)
+                        .frame(width: width * 0.5, height: height * 0.5)
+                        .offset(x: width * 0.25)
                 case .fill:
                     RoundedRectangle(cornerRadius: 1).padding(3)
                 }

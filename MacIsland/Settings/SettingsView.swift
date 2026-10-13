@@ -29,6 +29,17 @@ struct SettingsView: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
+            Section("窗口居中") {
+                HStack {
+                    Text("窗口比例")
+                    Slider(value: $settings.centerRatio, in: 0.3...1, step: 0.05)
+                        .accessibilityLabel("居中窗口宽高比例")
+                    Text(settings.effectiveCenterRatio.formatted(.percent.precision(.fractionLength(0))))
+                        .monospacedDigit().frame(width: 48, alignment: .trailing)
+                }
+                Text("宽、高各占屏幕可用区域的所选比例，默认 60%。")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
             Section("交互") {
                 Toggle("鼠标悬停时展开", isOn: $settings.hoverEnabled)
                 HStack {
@@ -50,14 +61,14 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 460, height: 420)
+        .frame(width: 460, height: 530)
     }
 }
 
 @MainActor
 final class SettingsWindowController: NSWindowController {
     init(settings: IslandSettings, displays: DisplayCatalog) {
-        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 460, height: 420),
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 460, height: 530),
                               styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
         window.title = "MacIsland 设置"
         window.isReleasedWhenClosed = false
