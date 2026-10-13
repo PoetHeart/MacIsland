@@ -62,7 +62,7 @@ struct SettingsView: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section {
-                Text("MacIsland · V0.5").font(.headline)
+                Text("MacIsland · V0.5.1").font(.headline)
                 Text(settings.text("设置自动保存，下次启动时恢复。"))
                     .font(.caption).foregroundStyle(.secondary)
             }

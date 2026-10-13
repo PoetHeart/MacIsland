@@ -24,7 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func rebuildMenu() {
         let menu = NSMenu()
-        let title = NSMenuItem(title: "MacIsland · V0.5", action: nil, keyEquivalent: "")
+        let title = NSMenuItem(title: "MacIsland · V0.5.1", action: nil, keyEquivalent: "")
         title.isEnabled = false
         menu.addItem(title)
         menu.addItem(.separator())

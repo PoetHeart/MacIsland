@@ -11,7 +11,7 @@ MacIsland 是一个轻量的 Mac 窗口整理工具。平时不显示黑块，�
 ## 你可以做什么
 
 - **拖动就能分屏**：按住窗口标题栏拖到顶部，移到左半屏、居中或右半屏按钮上，松手应用。移到操作区外松手，或按 Esc 取消。
-- **拖动位置预览（源码版）**：拖到布局按钮时显示半透明目标区域，居中预览跟随设置比例；移出或取消即隐藏。
+- **拖动位置预览**：拖到布局按钮时显示半透明目标区域，居中预览跟随设置比例；移出或取消即隐藏。
 - **再点一次还原**：对同一窗口再次点击刚用过的布局，恢复调整前的位置和大小。手动移动或缩放窗口后，会以新位置作为下一次恢复起点。
 
 - **左半屏、铺满屏幕、居中、右半屏**：快速整理当前应用窗口，不抢走目标应用焦点。
@@ -25,7 +25,7 @@ Swift + SwiftUI + AppKit，公开 Apple API，无第三方依赖。没有音乐�
 
 ## 下载与安装
 
-1. 从 [GitHub Releases](https://github.com/PoetHeart/MacIsland/releases/latest) 下载 `MacIsland-0.5.0-universal.dmg`。
+1. 从 [GitHub Releases](https://github.com/PoetHeart/MacIsland/releases/latest) 下载 `MacIsland-0.5.1-universal.dmg`。
 2. 打开 DMG，将 **MacIsland.app** 拖到 **Applications**。
 3. 从“应用程序”启动 MacIsland。菜单栏胶囊图标提供设置、显示、隐藏和退出。
 4. 要控制其他应用窗口，点击“窗口控制授权…”，在系统设置的“隐私与安全性 → 辅助功能”中手动允许 MacIsland。

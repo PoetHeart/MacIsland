@@ -11,7 +11,7 @@ A lightweight Mac window organizer that stays invisible until you need it.
 ## Features
 
 - **Drag to arrange:** drag a window by its title bar to the top, choose Left Half, Center or Right Half, and release. Release outside the controls or press Esc to cancel.
-- **Drag preview (source build):** see translucent target bounds before releasing, including your custom center size; leaving the controls or cancelling hides the preview.
+- **Drag preview:** see translucent target bounds before releasing, including your custom center size; leaving the controls or cancelling hides the preview.
 - **Click again to restore:** repeat the same layout on the same window to restore its previous position and size. Manual movement or resizing starts a fresh baseline.
 
 - **Left Half, Fill Screen, Center and Right Half** for the active application window, without stealing focus.
@@ -25,7 +25,7 @@ Built with Swift, SwiftUI and AppKit using public Apple APIs. No third-party dep
 
 ## Download and install
 
-1. Download `MacIsland-0.5.0-universal.dmg` from [GitHub Releases](https://github.com/PoetHeart/MacIsland/releases/latest).
+1. Download `MacIsland-0.5.1-universal.dmg` from [GitHub Releases](https://github.com/PoetHeart/MacIsland/releases/latest).
 2. Open it and drag **MacIsland.app** into **Applications**.
 3. Launch MacIsland from Applications. Use the capsule menu-bar icon for settings, visibility and quitting.
 4. For window actions, choose **Window Control Permission…** and manually enable MacIsland in System Settings → Privacy & Security → Accessibility.
