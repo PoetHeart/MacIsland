@@ -21,6 +21,11 @@ struct FrameworkChecks {
         let fallback = ScreenGeometry(frame: plain.screenFrame, safeHeight: 32, left: nil, right: nil)
         precondition(!fallback.hasNotch)
         for geometry in [plain, notched, fallback] {
+            precondition(geometry.containsActivationPoint(CGPoint(x: geometry.centerX, y: geometry.top)))
+            precondition(geometry.containsActivationPoint(CGPoint(x: geometry.activationRect.minX, y: geometry.top)))
+            precondition(geometry.containsActivationPoint(CGPoint(x: geometry.activationRect.maxX, y: geometry.top)))
+            precondition(!geometry.containsActivationPoint(CGPoint(x: geometry.centerX, y: geometry.top + 0.1)))
+            precondition(!geometry.containsActivationPoint(CGPoint(x: geometry.activationRect.maxX + 0.1, y: geometry.top)))
             let idle = geometry.size(for: .idle)
             let compact = geometry.size(for: .compact)
             let expanded = geometry.size(for: .expanded)
@@ -90,6 +95,15 @@ struct FrameworkChecks {
         precondition(controller.model?.state == .idle)
         let idle = geometry.size(for: .idle)
         precondition(abs(controller.displaySize.width - idle.width) < 1)
+        // Moving directly to the exact top edge must expand and stay expanded.
+        mouse = CGPoint(x: geometry.centerX, y: geometry.top)
+        try await Task.sleep(for: .milliseconds(900))
+        precondition(controller.model?.state == .expanded, "Exact top edge must trigger expansion")
+        try await Task.sleep(for: .milliseconds(400))
+        precondition(controller.model?.state == .expanded, "Top edge hover must remain expanded")
+        mouse = CGPoint(x: -10000, y: -10000)
+        try await Task.sleep(for: .milliseconds(900))
+        precondition(controller.model?.state == .idle)
         // Hide while expansion is pending; reopening must reset to idle.
         mouse = CGPoint(x: geometry.centerX, y: geometry.top - 2)
         try await Task.sleep(for: .milliseconds(70))

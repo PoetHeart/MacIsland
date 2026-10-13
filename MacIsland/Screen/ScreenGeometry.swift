@@ -57,6 +57,13 @@ struct ScreenGeometry {
         return CGRect(x: centerX - width / 2, y: top - height, width: width, height: height)
     }
 
+    func containsActivationPoint(_ point: CGPoint) -> Bool {
+        let rect = activationRect
+        // CGRect.contains excludes maxY, but the pointer can rest exactly on the screen's top edge.
+        return point.x >= rect.minX && point.x <= rect.maxX
+            && point.y >= rect.minY && point.y <= rect.maxY
+    }
+
     var panelFrame: CGRect {
         let expanded = size(for: .expanded)
         // Extra room permits spring overshoot without clipping.
