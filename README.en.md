@@ -2,7 +2,7 @@
 
 **Drag a window to the top, release to arrange it, and click the same layout again to restore it.**
 
-A lightweight Mac window organizer that stays invisible until you need it.
+MacIsland is a free, open-source **Mac productivity utility** that combines a **Dynamic Island / notch interface** with **macOS window management**. Drag to snap windows, center them with a live position preview, and restore their previous layout. It stays invisible until needed and also works on external displays without a notch.
 
 **[简体中文](README.md) · English**
 
