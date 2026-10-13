@@ -54,6 +54,16 @@ struct FrameworkChecks {
         let defaults = UserDefaults(suiteName: suite)!
         defer { defaults.removePersistentDomain(forName: suite) }
         let settings = IslandSettings(defaults: defaults)
+        settings.language = "en"
+        precondition(settings.text("居中") == "Center")
+        precondition(IslandSettings(defaults: defaults).language == "en")
+        for (chinese, english) in AppText.english {
+            precondition(!english.isEmpty && AppText.text(chinese, language: "en") == english)
+            precondition(AppText.text(chinese, language: "zh-Hans") == chinese)
+        }
+        settings.language = "zh-Hans"
+        precondition(settings.text("设置…") == "设置…")
+        print("PASS: Chinese/English selection, translation catalog and persisted language")
         precondition(settings.centerRatio == 0.6)
         settings.centerRatio = 0.75
         precondition(IslandSettings(defaults: defaults).centerRatio == 0.75)

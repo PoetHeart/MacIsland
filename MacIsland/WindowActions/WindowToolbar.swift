@@ -10,18 +10,18 @@ struct WindowToolbar: View {
                     Button { manager.perform(action) } label: {
                         VStack(spacing: 12) {
                             WindowActionIcon(action: action).frame(width: 28, height: 19)
-                            Text(action.title).font(.system(size: 12, weight: .medium))
+                            Text(manager.text(action.title)).font(.system(size: 12, weight: .medium))
                         }
                         .frame(maxWidth: .infinity).frame(height: 76)
                         .contentShape(RoundedRectangle(cornerRadius: 10))
                     }
                     .buttonStyle(WindowTileStyle())
                     .disabled(!manager.canPerform)
-                    .help("调整当前应用窗口：\(action.title)")
+                    .help(manager.text("调整当前应用窗口：") + manager.text(action.title))
                 }
             }
             if !manager.isTrusted {
-                Button(manager.message.isEmpty ? "开启窗口控制 · 需要辅助功能权限" : "请在系统设置的“辅助功能”中开启 MacIsland") { manager.requestPermission() }
+                Button(manager.message.isEmpty ? manager.text("开启窗口控制 · 需要辅助功能权限") : manager.text("请在系统设置的“辅助功能”中开启 MacIsland")) { manager.requestPermission() }
                     .buttonStyle(.plain).font(.system(size: 11)).foregroundStyle(.white)
             } else {
                 Text(manager.message.isEmpty ? manager.targetName : manager.message)

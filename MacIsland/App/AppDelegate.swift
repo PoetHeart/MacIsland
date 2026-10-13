@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -6,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let displays = DisplayCatalog()
     private var settingsWindow: SettingsWindowController?
     private var island: IslandWindowController!
+    private var languageSubscription: AnyCancellable?
     private var statusItem: NSStatusItem!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -14,12 +16,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = NSImage(systemSymbolName: "capsule.fill", accessibilityDescription: "MacIsland")
         rebuildMenu()
+        languageSubscription = settings.$language.dropFirst().receive(on: RunLoop.main).sink { [weak self] _ in
+            self?.rebuildMenu()
+        }
         if settings.isVisible { island.show() }
     }
 
     private func rebuildMenu() {
         let menu = NSMenu()
-        let title = NSMenuItem(title: "MacIsland · V0.3", action: nil, keyEquivalent: "")
+        let title = NSMenuItem(title: "MacIsland · V0.4", action: nil, keyEquivalent: "")
         title.isEnabled = false
         menu.addItem(title)
         menu.addItem(.separator())
@@ -34,7 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func item(_ title: String, _ action: Selector, key: String = "") -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: action, keyEquivalent: key)
+        let item = NSMenuItem(title: settings.text(title), action: action, keyEquivalent: key)
         item.target = self
         return item
     }

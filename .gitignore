@@ -4,3 +4,5 @@ work/
 .DS_Store
 xcuserdata/
 *.xcuserstate
+build-*/
+release/
