@@ -14,6 +14,8 @@ codesign --verify --deep --strict "$APP"
 BINARY_ARCHS=$(xcrun lipo -archs "$APP/Contents/MacOS/MacIsland")
 [[ "$BINARY_ARCHS" == *arm64* && "$BINARY_ARCHS" == *x86_64* ]] || { print -u2 "Missing architecture: $BINARY_ARCHS"; exit 1; }
 STAGING=$(mktemp -d "$PROJECT_ROOT/work/dmg-stage.XXXXXX")
+# Only the freshly created staging directory is disposable; keep the built app and DMG.
+trap 'rm -rf -- "$STAGING"' EXIT
 ditto "$APP" "$STAGING/MacIsland.app"
 ln -s /Applications "$STAGING/Applications"
 cat > "$STAGING/INSTALL.txt" <<'INSTALL'
@@ -23,8 +25,12 @@ Drag MacIsland.app into Applications, then launch it from Applications.
 将 MacIsland.app 拖到 Applications，然后从“应用程序”启动。
 
 Settings → Language / 语言: 简体中文 or English.
-Window control requires Accessibility permission. Hovering does not.
-窗口控制需要辅助功能权限；仅悬停无需授权。
+The menu-bar icon combines battery (outer arc), Wi-Fi (center), and volume (lower dots).
+菜单栏图标：外圈电量，中间 Wi-Fi，下方圆点音量。点击查看数值和应用菜单。
+Window control requires Accessibility permission. Hovering and system status do not.
+窗口控制需要辅助功能权限；悬停和系统状态显示无需此权限。
+To upgrade, quit MacIsland first, then replace the app in Applications.
+升级时先退出旧版，再替换“应用程序”中的 MacIsland。
 
 This release is ad-hoc signed and is NOT Apple notarized.
 Gatekeeper may block downloaded copies. Source: https://github.com/PoetHeart/MacIsland

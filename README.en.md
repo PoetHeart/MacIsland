@@ -1,8 +1,8 @@
 # MacIsland
 
-**Drag a window to the top, release to arrange it, and click the same layout again to restore it.**
+**Arrange windows from the top edge. Check battery, Wi-Fi and volume in one menu-bar icon.**
 
-MacIsland is a free, open-source **Mac productivity utility** that combines a **Dynamic Island / notch interface** with **macOS window management**. Drag to snap windows, center them with a live position preview, and restore their previous layout. It stays invisible until needed and also works on external displays without a notch.
+MacIsland is a free, open-source **Mac productivity utility** combining **Dynamic Island window management** with a **three-in-one status icon**. Drag a window to the top edge to snap or center it, preview its position before releasing, and click the same layout again to restore it. The menu-bar icon shows live battery, Wi-Fi and output volume. Window controls stay hidden until you hover over the notch or top-center edge, and work on external displays without a notch too.
 
 **[简体中文](README.md) · English**
 
@@ -10,12 +10,10 @@ MacIsland is a free, open-source **Mac productivity utility** that combines a **
 
 ## Features
 
-- **Combined menu-bar icon (v0.6 source build):** inspired by [Status Trio](https://github.com/lingyired/status-trio) / iPhone Duo, showing live battery, Wi-Fi and output volume. Click for status values and the existing menu; supports English/Chinese and light/dark menu bars.
-
+- **Combined menu-bar icon:** live battery, Wi-Fi and output volume in one icon. Click for detailed readings and the app menu. Adapts to light and dark menu bars.
 - **Drag to arrange:** drag a window by its title bar to the top, choose Left Half, Center or Right Half, and release. Release outside the controls or press Esc to cancel.
 - **Drag preview:** see translucent target bounds before releasing, including your custom center size; leaving the controls or cancelling hides the preview.
 - **Click again to restore:** repeat the same layout on the same window to restore its previous position and size. Manual movement or resizing starts a fresh baseline.
-
 - **Left Half, Fill Screen, Center and Right Half** for the active application window, without stealing focus.
 - **Adjustable centering:** width and height each default to 60% of usable screen space; adjust from 30% to 100%.
 - **Invisible when idle:** hover over the notch or top-center edge to reveal controls; move away to collapse.
@@ -23,14 +21,24 @@ MacIsland is a free, open-source **Mac productivity utility** that combines a **
 - **Chinese / English:** choose your language in Settings → Language / 语言. Changes apply immediately and are saved.
 - **Smooth transitions:** interruptible springs, stable button layout and separate fades. Supports Reduce Motion.
 
-Built with Swift, SwiftUI and AppKit using public Apple APIs. No third-party dependencies. No music, stashing or automatic tiling features.
+Built with Swift, SwiftUI and AppKit using public Apple APIs. No third-party dependencies.
+
+## Reading the status icon
+
+- **Outer arc:** remaining battery. A lightning bolt means charging; a plug means external power.
+- **Middle Wi-Fi symbol:** connection and signal strength. A slash means Wi-Fi is off.
+- **Bottom dots:** default output volume. More lit dots mean higher volume; a cross means muted.
+
+Click the icon for battery percentage, Wi-Fi status and volume percentage. The design is inspired by [Status Trio](https://github.com/lingyired/status-trio) / iPhone Duo.
 
 ## Download and install
 
-1. Download `MacIsland-0.5.1-universal.dmg` from [GitHub Releases](https://github.com/PoetHeart/MacIsland/releases/latest).
+1. Download [MacIsland-0.6.0-universal.dmg](https://github.com/PoetHeart/MacIsland/releases/download/v0.6.0/MacIsland-0.6.0-universal.dmg).
 2. Open it and drag **MacIsland.app** into **Applications**.
 3. Launch MacIsland from Applications. Use the menu-bar icon for settings, visibility and quitting.
 4. For window actions, choose **Window Control Permission…** and manually enable MacIsland in System Settings → Privacy & Security → Accessibility.
+
+**Upgrading:** quit the old version from its menu-bar menu, drag the new app into Applications to replace it, then launch it again.
 
 Requires **macOS 14.0 or later**. The app is universal for Apple Silicon and Intel. Runtime checks were performed on Apple Silicon; Intel was compile-tested only.
 
