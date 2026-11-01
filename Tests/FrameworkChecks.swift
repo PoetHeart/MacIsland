@@ -5,7 +5,11 @@ import SwiftUI
 struct FrameworkChecks {
     @MainActor
     static func main() async throws {
+        _ = NSApplication.shared
         try checkWindowActions()
+        try checkSystemStatus()
+        try await checkSystemStatusLifecycle()
+        checkStatusPresentation()
         let plain = ScreenGeometry(frame: CGRect(x: -1920, y: 200, width: 1920, height: 1080), safeHeight: 0, left: nil, right: nil)
         precondition(!plain.hasNotch && plain.centerX == -960 && plain.top == 1280)
         precondition(plain.panelFrame.maxY == 1280)

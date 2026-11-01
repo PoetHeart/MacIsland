@@ -39,6 +39,20 @@ enum AppText {
         (Locale.preferredLanguages.first ?? "en").hasPrefix("zh") ? "zh-Hans" : "en"
     }
     static let english: [String: String] = [
+        "电量": "Battery",
+        "音量": "Volume",
+        "暂不可用": "Unavailable",
+        "无内置电池": "No built-in battery",
+        "正在充电": "Charging",
+        "已接电源": "Plugged in",
+        "已关闭": "Off",
+        "未连接": "Disconnected",
+        "已连接": "Connected",
+        "信号强": "Strong signal",
+        "信号中等": "Medium signal",
+        "信号弱": "Weak signal",
+        "信号未知": "Signal unknown",
+        "已静音": "Muted",
         "已恢复原窗口": "Original window restored",
         "拖动已取消": "Drag cancelled",
         "拖到按钮上，松手应用；移出取消": "Drag over a button and release; move away to cancel",

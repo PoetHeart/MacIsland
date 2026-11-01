@@ -10,6 +10,8 @@ MacIsland is a free, open-source **Mac productivity utility** that combines a **
 
 ## Features
 
+- **Combined menu-bar icon (v0.6 source build):** inspired by [Status Trio](https://github.com/lingyired/status-trio) / iPhone Duo, showing live battery, Wi-Fi and output volume. Click for status values and the existing menu; supports English/Chinese and light/dark menu bars.
+
 - **Drag to arrange:** drag a window by its title bar to the top, choose Left Half, Center or Right Half, and release. Release outside the controls or press Esc to cancel.
 - **Drag preview:** see translucent target bounds before releasing, including your custom center size; leaving the controls or cancelling hides the preview.
 - **Click again to restore:** repeat the same layout on the same window to restore its previous position and size. Manual movement or resizing starts a fresh baseline.
@@ -21,13 +23,13 @@ MacIsland is a free, open-source **Mac productivity utility** that combines a **
 - **Chinese / English:** choose your language in Settings → Language / 语言. Changes apply immediately and are saved.
 - **Smooth transitions:** interruptible springs, stable button layout and separate fades. Supports Reduce Motion.
 
-Built with Swift, SwiftUI and AppKit using public Apple APIs. No third-party dependencies. No music, battery, stashing or automatic tiling features.
+Built with Swift, SwiftUI and AppKit using public Apple APIs. No third-party dependencies. No music, stashing or automatic tiling features.
 
 ## Download and install
 
 1. Download `MacIsland-0.5.1-universal.dmg` from [GitHub Releases](https://github.com/PoetHeart/MacIsland/releases/latest).
 2. Open it and drag **MacIsland.app** into **Applications**.
-3. Launch MacIsland from Applications. Use the capsule menu-bar icon for settings, visibility and quitting.
+3. Launch MacIsland from Applications. Use the menu-bar icon for settings, visibility and quitting.
 4. For window actions, choose **Window Control Permission…** and manually enable MacIsland in System Settings → Privacy & Security → Accessibility.
 
 Requires **macOS 14.0 or later**. The app is universal for Apple Silicon and Intel. Runtime checks were performed on Apple Silicon; Intel was compile-tested only.
@@ -41,6 +43,8 @@ Select a target app window, then hover over the notch or top-center edge. On dis
 Fill Screen uses the work area outside the menu bar and Dock; it does not enter a separate full-screen Space. Minimum window sizes, full-screen state and app restrictions can prevent resizing; failures are reported. Hover detection requires no permission. Window actions need Accessibility permission, but not Screen Recording.
 
 Dragging requires Accessibility permission and hover enabled. Detection requires a drag starting near the title bar with actual window movement and unchanged size; custom title bars may not work. The overlay passes drag events through to the original app. Restore history is kept for up to 32 windows during the current run and is cleared on restart. If the original display is disconnected, restored bounds are kept on an available display.
+
+Status is read locally through public IOKit, CoreWLAN and CoreAudio APIs. No Wi-Fi names, location access, microphone permission or screen recording are needed. Volume refers to the default output device; no audio is captured. Missing batteries and unreadable volume are explicitly indicated. A Wi-Fi connection does not verify internet access.
 
 ## Development
 
