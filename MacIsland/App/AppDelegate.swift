@@ -9,6 +9,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var island: IslandWindowController!
     private var languageSubscription: AnyCancellable?
     private var statusItem: NSStatusItem!
+    private var statusMenu: NSMenu!
+    private var connectivity: StatusPopoverController?
     private let systemStatus = SystemStatusMonitor()
     private var statusSubscription: AnyCancellable?
     private var statusRows: [NSMenuItem] = []
@@ -18,6 +20,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         island = IslandWindowController(settings: settings)
         statusItem = NSStatusBar.system.statusItem(withLength: 30)
         statusItem.button?.imagePosition = .imageOnly
+        statusItem.button?.target = self
+        statusItem.button?.action = #selector(statusItemClicked(_:))
+        statusItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        connectivity = StatusPopoverController(settings: settings, status: systemStatus) { [weak self] in
+            self?.openSettings()
+        }
         statusSubscription = systemStatus.$snapshot.removeDuplicates().sink { [weak self] snapshot in
             self?.updateStatus(snapshot)
         }
@@ -32,7 +40,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func rebuildMenu() {
         let menu = NSMenu()
         menu.delegate = self
-        let title = NSMenuItem(title: "MacIsland · V0.6.0", action: nil, keyEquivalent: "")
+        let title = NSMenuItem(title: "MacIsland · V0.7.0", action: nil, keyEquivalent: "")
         title.isEnabled = false
         menu.addItem(title)
         statusRows = (0..<3).map { _ in
@@ -49,7 +57,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(item("隐藏灵动岛", #selector(hideIsland)))
         menu.addItem(.separator())
         menu.addItem(item("退出 MacIsland", #selector(quit), key: "q"))
-        statusItem.menu = menu
+        statusMenu = menu
         updateStatus(systemStatus.snapshot)
     }
 
@@ -63,6 +71,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func menuWillOpen(_ menu: NSMenu) { systemStatus.refresh() }
+
+    @objc private func statusItemClicked(_ sender: NSStatusBarButton) {
+        if NSApp.currentEvent?.type == .rightMouseUp || NSApp.currentEvent?.modifierFlags.contains(.control) == true {
+            connectivity?.close()
+            statusItem.menu = statusMenu
+            sender.performClick(nil)
+            statusItem.menu = nil
+        } else {
+            connectivity?.toggle(relativeTo: sender)
+        }
+    }
 
     private func item(_ title: String, _ action: Selector, key: String = "") -> NSMenuItem {
         let item = NSMenuItem(title: settings.text(title), action: action, keyEquivalent: key)
@@ -79,6 +98,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func hideIsland() { island.hide() }
     @objc private func quit() { NSApp.terminate(nil) }
     func applicationWillTerminate(_ notification: Notification) {
+        connectivity?.shutdown()
         systemStatus.stop()
         statusSubscription = nil
         island.shutdown()

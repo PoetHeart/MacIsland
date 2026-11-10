@@ -1,0 +1,3 @@
+"NSBluetoothAlwaysUsageDescription" = "MacIsland shows paired Bluetooth devices and connects or disconnects them when you choose.";
+"NSLocationUsageDescription" = "MacIsland uses location permission only to display the current Wi-Fi network name when you request it.";
+"NSLocationWhenInUseUsageDescription" = "MacIsland uses location permission only to display the current Wi-Fi network name when you request it.";

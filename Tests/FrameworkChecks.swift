@@ -6,6 +6,9 @@ struct FrameworkChecks {
     @MainActor
     static func main() async throws {
         _ = NSApplication.shared
+        try await checkWiFiController()
+        try await checkBluetoothController()
+        try await checkConnectivityPopover()
         try checkWindowActions()
         try checkSystemStatus()
         try await checkSystemStatusLifecycle()

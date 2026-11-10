@@ -7,10 +7,13 @@
 <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
 <key>CFBundleName</key><string>$(PRODUCT_NAME)</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.6.0</string>
-<key>CFBundleVersion</key><string>7</string>
+<key>CFBundleShortVersionString</key><string>0.7.0</string>
+<key>CFBundleVersion</key><string>8</string>
 <key>LSMinimumSystemVersion</key><string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 <key>CFBundleLocalizations</key><array><string>en</string><string>zh-Hans</string></array>
+<key>NSBluetoothAlwaysUsageDescription</key><string>MacIsland shows paired Bluetooth devices and connects or disconnects them when you choose.</string>
+<key>NSLocationUsageDescription</key><string>MacIsland uses location permission only to display the current Wi-Fi network name when you request it.</string>
+<key>NSLocationWhenInUseUsageDescription</key><string>MacIsland uses location permission only to display the current Wi-Fi network name when you request it.</string>
 <key>LSUIElement</key><true/>
 <key>NSHighResolutionCapable</key><true/>
 <key>NSPrincipalClass</key><string>NSApplication</string>

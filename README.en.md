@@ -1,14 +1,18 @@
 # MacIsland
 
-**Arrange windows from the top edge. Check battery, Wi-Fi and volume in one menu-bar icon.**
+**Arrange windows from the top edge. Manage Wi-Fi, Bluetooth and system status from your menu bar.**
 
-MacIsland is a free, open-source **Mac productivity utility** combining **Dynamic Island window management** with a **three-in-one status icon**. Drag a window to the top edge to snap or center it, preview its position before releasing, and click the same layout again to restore it. The menu-bar icon shows live battery, Wi-Fi and output volume. Window controls stay hidden until you hover over the notch or top-center edge, and work on external displays without a notch too.
+MacIsland is a free, open-source **Mac productivity utility** combining **Dynamic Island window management** with a **native menu-bar connections panel**. Drag a window to the top edge to snap or center it, preview its position before releasing, and click the same layout again to restore it. The menu-bar icon shows live battery, Wi-Fi and output volume. Click it to toggle Wi-Fi or connect and disconnect compatible paired Bluetooth devices. Window controls stay hidden until you hover over the notch or top-center edge, and work on external displays without a notch too.
 
 **[简体中文](README.md) · English**
 
 [Download DMG](https://github.com/PoetHeart/MacIsland/releases/latest) · [Release notes](https://github.com/PoetHeart/MacIsland/releases) · [Report an issue](https://github.com/PoetHeart/MacIsland/issues)
 
 ## Features
+
+- **Native connections panel:** left-click the status icon for a Control Center-style panel; right-click for the existing app menu. Uses native glass/materials with light and dark appearance support.
+- **Wi-Fi controls:** toggle Wi-Fi and inspect connection and signal status. Network names require optional location access; network selection and passwords stay in System Settings.
+- **Visual Bluetooth devices:** inspect paired devices exposed by public APIs and connect/disconnect compatible devices. Input devices require confirmation before disconnecting. Unsupported devices link to Bluetooth Settings.
 
 - **Combined menu-bar icon:** live battery, Wi-Fi and output volume in one icon. Click for detailed readings and the app menu. Adapts to light and dark menu bars.
 - **Drag to arrange:** drag a window by its title bar to the top, choose Left Half, Center or Right Half, and release. Release outside the controls or press Esc to cancel.
@@ -33,9 +37,9 @@ Click the icon for battery percentage, Wi-Fi status and volume percentage. The d
 
 ## Download and install
 
-1. Download [MacIsland-0.6.0-universal.dmg](https://github.com/PoetHeart/MacIsland/releases/download/v0.6.0/MacIsland-0.6.0-universal.dmg).
+1. Download [MacIsland-0.7.0-universal.dmg](https://github.com/PoetHeart/MacIsland/releases/download/v0.7.0/MacIsland-0.7.0-universal.dmg).
 2. Open it and drag **MacIsland.app** into **Applications**.
-3. Launch MacIsland from Applications. Use the menu-bar icon for settings, visibility and quitting.
+3. Launch MacIsland from Applications. Left-click the menu-bar icon for the connections panel; right-click for settings, visibility and quitting.
 4. For window actions, choose **Window Control Permission…** and manually enable MacIsland in System Settings → Privacy & Security → Accessibility.
 
 **Upgrading:** quit the old version from its menu-bar menu, drag the new app into Applications to replace it, then launch it again.
@@ -52,7 +56,9 @@ Fill Screen uses the work area outside the menu bar and Dock; it does not enter 
 
 Dragging requires Accessibility permission and hover enabled. Detection requires a drag starting near the title bar with actual window movement and unchanged size; custom title bars may not work. The overlay passes drag events through to the original app. Restore history is kept for up to 32 windows during the current run and is cleared on restart. If the original display is disconnected, restored bounds are kept on an available display.
 
-Status is read locally through public IOKit, CoreWLAN and CoreAudio APIs. No Wi-Fi names, location access, microphone permission or screen recording are needed. Volume refers to the default output device; no audio is captured. Missing batteries and unreadable volume are explicitly indicated. A Wi-Fi connection does not verify internet access.
+System status is read locally through public Apple APIs. Basic readings need no location access. Location permission is requested only when you choose to show the Wi-Fi name; Bluetooth device access follows system authorization. No microphone or screen recording access, audio capture or stored Wi-Fi passwords. Volume refers to the default output device; unavailable readings are explicitly indicated. A Wi-Fi connection does not verify internet access.
+
+Bluetooth actions cover compatible paired devices exposed by public APIs, not all BLE peripherals. A Bluetooth link does not mean headphones have become the active audio output. New device pairing and the Bluetooth master switch are managed in System Settings.
 
 ## Development
 
